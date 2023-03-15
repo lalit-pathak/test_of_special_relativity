@@ -1,5 +1,6 @@
 """"
-Script to run PE run using dynesty sampler for modified TaylorF2 model
+Script to run PE run using dynesty sampler for modified TaylorF2 model 
+keeping distance and iota fixed to their MAP values
 Author: Lalit Pathak(lalit.pathak@iitgn.ac.in)
 
 """"
@@ -24,6 +25,7 @@ from pycbc.conversions import mass1_from_mchirp_q, mass2_from_mchirp_q
 from pycbc.conversions import mass1_from_mchirp_eta, mass2_from_mchirp_eta
 from pycbc.inference.models import MarginalizedPhaseGaussianNoise, GaussianNoise
 from pycbc.waveform.generator import (FDomainDetFrameGenerator, FDomainCBCGenerator)
+from utis import cdfinv_q
 
 merger = Merger("GW170817")
 ifos = ['L1', 'H1', 'V1'] # defining a list of interferometers
@@ -153,7 +155,7 @@ with mp.Pool(nProcs) as pool:
 #-- saving pe samples ---
 raw_samples = sampler.results['samples']
 print('Evidence:{}'.format(res['logz'][-1]))
-file = h5py.File('samples_data_pycbc_{}_fISCO.hdf5'.format(whichfrac), 'w')
+file = h5py.File('samples_data_k_{}_fISCO.hdf5'.format(whichfrac), 'w')
 params = ['mchirp', 'mass_ratio', 's1z', 's2z', 'k', 'iota', 'distance', 'tc', 'logwt', 'logz', 'logl']
 i = 0
 for p in params:

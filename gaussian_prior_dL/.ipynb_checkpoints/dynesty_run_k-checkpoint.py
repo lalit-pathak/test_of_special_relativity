@@ -1,6 +1,6 @@
 """"
-Script to run PE run using dynesty sampler for TaylorF2 model 
-keeping ra, dec and polarization fixed to their MAP values
+Script to run PE run using dynesty sampler for modified TaylorF2 model 
+with a gaussian prior over distance (from EM counterpart
 Author: Lalit Pathak(lalit.pathak@iitgn.ac.in)
 
 """"
@@ -89,7 +89,7 @@ dec = -0.408084 #radian
 static_params = {'approximant': approximant, 'f_lower': fLow, 'f_higher': fHigh, 'ra': ra, 'dec': dec,
                         'polarization': polarization}
 
-variable_params = ['mass1', 'mass2', 'spin1z', 'spin2z', 'inclination', 'distance', 'tc']
+variable_params = ['mass1', 'mass2', 'spin1z', 'spin2z', 'k', 'inclination', 'distance', 'tc']
 
 model = MarginalizedPhaseGaussianNoise(variable_params, stilde, low_frequency_cutoff, \
                                               psds=psds, high_frequency_cutoff=high_frequency_cutoff, static_params=static_params)
@@ -97,45 +97,53 @@ model = MarginalizedPhaseGaussianNoise(variable_params, stilde, low_frequency_cu
 #-- defining loglikelihood function ---
 def pycbc_log_likelihood(query):
     
-    mchirp, mass_ratio, s1z, s2z, iota, distance, tc = query
+    mchirp, mass_ratio, s1z, s2z, k, iota, distance, tc = query
     m1 = mass1_from_mchirp_q(mchirp, mass_ratio)
     m2 = mass2_from_mchirp_q(mchirp, mass_ratio)
     
-    model.update(mass1=m1, mass2=m2, spin1z=s1z, spin2z=s2z, inclination=iota, distance=distance, tc=tc)
+    model.update(mass1=m1, mass2=m2, spin1z=s1z, spin2z=s2z, k=k, inclination=iota, distance=distance, tc=tc)
 
     return model.loglr
+
+#-- lambda for calling the PyCBC loglikelihood function ---
+#PyCBC_logL = lambda q : pycbc_log_likelihood(q, psd, data)
 
 #-- defining prior tranform ---
 mchirp_min, mchirp_max = 1.197, 1.198
 mass_ratio_min, mass_ratio_max = 1, 1.7
 s1z_min, s1z_max = 0, 0.05
 s2z_min, s2z_max = 0, 0.05
+k_min, k_max = -1e-4, 1e-4
+distance_mean, distance_var = 40.7, 3.3  # fixing the galaxy location
 distance_min, distance_max = 12, 53
 tc_min, tc_max = merger.time - 0.15, merger.time + 0.15
 
 def prior_transform(cube):
-    
+     
     """
     chirpmass and q: distribution which is uniform in m1 and m2 and constrained by chirpmass and q
     spin1z/2z: uniform distribtion
+    k: uniform distribution
     inclination: uniform in cos(iota)
     distance: uniform volume
     tc: uniform distribution
     """
-    cube[0] = np.power((mchirp_max**2-mchirp_min**2)*cube[0]+mchirp_min**2,1./2)     # chirpmass: power law mc**1
-    cube[1] = cdfinv_q(mass_ratio_min, mass_ratio_max, cube[1])                      # mass-ratio: uniform prior
-    cube[2] = s1z_min + (s1z_max - s1z_min) * cube[2]   # s1z: uniform prior
-    cube[3] = s2z_min + (s2z_max - s2z_min) * cube[3]   # s2z: uniform prior
-    cube[4] = np.arccos(2*cube[4] - 1) 
-    cube[5] = np.power((distance_max**3-distance_min**3)*cube[5]+distance_min**3,1./3) # distance: unifrom prior in dL**3
-    cube[6] = tc_min + (tc_max - tc_min) * cube[6] # pol: uniform angle
+        
+    cube[0] = np.power((mchirp_max**2-mchirp_min**2)*cube[0]+mchirp_min**2,1./2)      # chirpmass: power law mc**1
+    cube[1] = cdfinv_q(mass_ratio_min, mass_ratio_max, cube[1])                       # mass-ratio: uniform prior
+    cube[2] = s1z_min + (s1z_max - s1z_min) * cube[2]                # s1z: uniform prior
+    cube[3] = s2z_min + (s2z_max - s2z_min) * cube[3]                # s2z: uniform prior
+    cube[4] = k_min + (k_max - k_min) * cube[4]                # s2z: uniform prior
+    cube[5] = np.arccos(2*cube[5] - 1) 
+    cube[6] = cdfinv_dL(distance_mean, distance_var, distance_min, distance_max, cube[6])  # distance: unifrom prior in dL**3
+    cube[7] = tc_min + (tc_max - tc_min) * cube[7] # pol: uniform angle
 
     return cube
 
 print('********** Sampling starts *********\n')
 
 nProcs = int(input('no. of processors to be used for dynesty sampler: '))
-nDims = 7
+nDims = 8
 
 st = time.time()
 
@@ -145,12 +153,12 @@ with mp.Pool(nProcs) as pool:
     sampler = dynesty.DynamicNestedSampler(pycbc_log_likelihood, prior_transform, nDims, sample='rwalk', \
                                             pool=pool, queue_size=nProcs)
     sampler.run_nested(dlogz_init=1e-4)
-                                           
+
 #-- saving pe samples ---
 raw_samples = sampler.results['samples']
 print('Evidence:{}'.format(res['logz'][-1]))
-file = h5py.File('samples_data_pycbc_{}_fISCO.hdf5'.format(whichfrac), 'w')
-params = ['mchirp', 'mass_ratio', 's1z', 's2z', 'iota', 'distance', 'tc', 'logwt', 'logz', 'logl']
+file = h5py.File('samples_data_k_{}_fISCO.hdf5'.format(whichfrac), 'w')
+params = ['mchirp', 'mass_ratio', 's1z', 's2z', 'k', 'iota', 'distance', 'tc', 'logwt', 'logz', 'logl']
 i = 0
 for p in params:
     file.create_dataset(p, data=raw_samples[:,i])
@@ -160,6 +168,7 @@ file.close()
 et = time.time()
 
 print('Done!!!')
-print('Time taken:{} Hours.'.format((et-st)/3600.))
+print('Time taken:{} Hours.'.format((et-st)/3600.))    
+
 
 

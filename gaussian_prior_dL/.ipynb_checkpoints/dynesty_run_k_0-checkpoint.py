@@ -1,6 +1,6 @@
 """"
-Script to run PE run using dynesty sampler for TaylorF2 model 
-keeping ra, dec and polarization fixed to their MAP values
+Script to run PE run using dynesty sampler for TaylorF2 model \
+with a gaussian prior on distance (from EM counterpart
 Author: Lalit Pathak(lalit.pathak@iitgn.ac.in)
 
 """"
@@ -105,6 +105,7 @@ def pycbc_log_likelihood(query):
 
     return model.loglr
 
+
 #-- defining prior tranform ---
 mchirp_min, mchirp_max = 1.197, 1.198
 mass_ratio_min, mass_ratio_max = 1, 1.7
@@ -127,7 +128,7 @@ def prior_transform(cube):
     cube[2] = s1z_min + (s1z_max - s1z_min) * cube[2]   # s1z: uniform prior
     cube[3] = s2z_min + (s2z_max - s2z_min) * cube[3]   # s2z: uniform prior
     cube[4] = np.arccos(2*cube[4] - 1) 
-    cube[5] = np.power((distance_max**3-distance_min**3)*cube[5]+distance_min**3,1./3) # distance: unifrom prior in dL**3
+    cube[5] = cdfinv_dL(distance_mean, distance_var, distance_min, distance_max, cube[5]) # distance: unifrom prior in dL**3
     cube[6] = tc_min + (tc_max - tc_min) * cube[6] # pol: uniform angle
 
     return cube

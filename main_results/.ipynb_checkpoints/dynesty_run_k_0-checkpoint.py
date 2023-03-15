@@ -1,5 +1,6 @@
 """"
-Script to run PE run using dynesty sampler for TaylorF2 model
+Script to run PE run using dynesty sampler for TaylorF2 model 
+keeping ra, dec and polarization fixed to their MAP values
 Author: Lalit Pathak(lalit.pathak@iitgn.ac.in)
 
 """"
