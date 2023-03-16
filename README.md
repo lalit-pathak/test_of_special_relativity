@@ -104,7 +104,7 @@ params = {'mass1': m1, 'mass2': m2, 'spin1z': s1z, 'spin2z': s2z, 'distance': di
 hp, hc = waveform.get_fd_waveform(approximant='TaylorF2',
                                delta_f=1/params['segLen'], **params)
                                
-k = 1e-9
+k = 1e-9 # we can see visual differences only beyond (~ greater) this value. Users are free to take different values of k to observed the effects.
 
 hp_td, hc_td = hp.to_timeseries(), hc.to_timeseries()
 hp_td_mod, hc_td_mod = hp_mod.to_timeseries(), hc_mod.to_timeseries()
