@@ -114,6 +114,6 @@ plt.title('match = %.5f'%match_value, fontsize=fontsize)
 plt.legend(fontsize=fontsize)
 plt.show()
 
-![localImage](.waveforms.jpg)
+![localImage](waveforms.jpg)
 
 ```
