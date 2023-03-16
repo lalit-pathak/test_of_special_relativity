@@ -1,0 +1,2 @@
+[pycbc.waveform.fd]
+TaylorF2_full = TaylorF2_mod_full:TaylorF2_full

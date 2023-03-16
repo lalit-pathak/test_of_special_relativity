@@ -1,0 +1,9 @@
+README.md
+TaylorF2_mod_full.py
+setup.py
+pycbc_TaylorF2_mod_full.egg-info/PKG-INFO
+pycbc_TaylorF2_mod_full.egg-info/SOURCES.txt
+pycbc_TaylorF2_mod_full.egg-info/dependency_links.txt
+pycbc_TaylorF2_mod_full.egg-info/entry_points.txt
+pycbc_TaylorF2_mod_full.egg-info/requires.txt
+pycbc_TaylorF2_mod_full.egg-info/top_level.txt

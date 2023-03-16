@@ -1,0 +1,18 @@
+Metadata-Version: 2.1
+Name: pycbc-TaylorF2-mod-full
+Version: 0.0.dev0
+Summary: Modified TaylorF2 waveform plugin for PyCBC
+Home-page: http://www.pycbc.org/
+Download-URL: https://github.com/gwastro/TaylorF2_mod_full/tarball/v0.0.dev0
+Author: Lalit Pathak
+Author-email: lalit.pathak@iitgn.ac.in
+Keywords: pycbc,signal processing,gravitational waves
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Intended Audience :: Science/Research
+Classifier: Natural Language :: English
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Astronomy
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
