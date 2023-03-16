@@ -13,7 +13,19 @@ Clone this repository and install modified TaylorF2 waveform plugin
     $ cd test_waveform_plugin
     $ python3 setup.py install
 
-For running this analysis, the GW170817 strain data can be downloaded from the following links: [inline link](https://www.jetbrains.com)
+For running this analysis, the GW170817 strain data can be downloaded from the following links:
+[L1](https://dcc.ligo.org/public/0146/P1700349/001/L-L1_LOSC_CLN_4_V1-1187007040-2048.gwf)
+[H1](https://dcc.ligo.org/public/0146/P1700349/001/H-H1_LOSC_CLN_4_V1-1187007040-2048.gwf)
+[V1](https://dcc.ligo.org/public/0146/P1700349/001/V-V1_LOSC_CLN_4_V1-1187007040-2048.gwf)
+
+Channel names for each detector
+
+```
+'L1': L1:LOSC-STRAIN
+'H1': H1:LOSC-STRAIN
+'V1': V1:LOSC-STRAIN
+```
+
 Example to generate modified waveform 
 
 ```python
