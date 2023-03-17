@@ -33,6 +33,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import pycbc
+from lal import LIGOTimeGPS
 from pycbc.frame import read_frame
 from pycbc.catalog import Merger
 from pycbc import waveform
@@ -98,16 +99,27 @@ for ifo in ifos:
                                     low_frequency_cutoff=low_frequency_cutoff[ifo], trunc_method='hann')
                                     
 params = {'mass1': m1, 'mass2': m2, 'spin1z': s1z, 'spin2z': s2z, 'distance': distance, \
-                      'f_lower': fLow, 'f_final': f_final, 'segLen': segLen, 'inclination': inclination}
-
+                      'f_lower': fLow, 'f_final': f_final, 'segLen': segLen, 'inclination': inclination}                              
+ 
 # generate a TaylorF2 model waveform
 hp, hc = waveform.get_fd_waveform(approximant='TaylorF2',
                                delta_f=1/params['segLen'], **params)
                                
-k = 1e-9 # we can see visual differences only beyond (~ greater) this value. Users are free to take different values of k to observed the effects.
+# Important note: We have already multiplied k by 1e-9 (inspired by previous measured values of k) in the phasing formula. 
+# So that any value of k we pass in the function below has to be multiple of 1e-9. So let's say if we want to generate a modified
+# TaylorF2 waveform for k = 1e-16, we need to pass k = 1e-7 in the python function below. 
+
+k = 1e-7
+
+hp_mod, hc_mod = waveform.get_fd_waveform(approximant='TaylorF2_full', k = k, \
+                                                          delta_f = 1/params['segLen'], **params)
 
 hp_td, hc_td = hp.to_timeseries(), hc.to_timeseries()
 hp_td_mod, hc_td_mod = hp_mod.to_timeseries(), hc_mod.to_timeseries()
+
+# for aligning the peaks
+hp_td_mod.start_time += LIGOTimeGPS(-hp_td_mod.sample_times.data[np.argmax(abs(hp_td_mod.data))])
+hc_td_mod.start_time += LIGOTimeGPS(-hc_td_mod.sample_times.data[np.argmax(abs(hc_td_mod.data))])
 
 # match calculation
 match_value = pycbc.filter.matchedfilter.match(hp_mod, hp, psd=psds[ifos[0]])[0] # calculated using psd from 'L1'
@@ -116,10 +128,10 @@ plt.figure(figsize=(8,5))
 
 fontsize = 12
 
-plt.plot(hp_td.sample_times, hp_td, ls='--', label='TaylorF2')
-plt.plot(hp_td_mod.sample_times, hp_td_mod, alpha=0.7, label='TaylorF2 modified with k = %.1e'%k)
-plt.xlim(-0.15, 0.01)
+plt.plot(hp_td.sample_times, hp_td, label='TaylorF2')
+plt.plot(hp_td_mod.sample_times, hp_td_mod, alpha=0.7, label='TaylorF2 modified with k = %.1e'%(k*1e-9))
 plt.tick_params(which='both', labelsize=fontsize)
+plt.xlim(-0.2, 0.01)
 plt.xlabel('Times (s)', fontsize=fontsize)
 plt.ylabel(r'$hp$', fontsize=fontsize)
 plt.title('match = %.5f'%match_value, fontsize=fontsize)
@@ -128,4 +140,4 @@ plt.show()
 
 ```
 
-![localImage](waveforms.jpg)
+![localImage](waveform.jpg)
