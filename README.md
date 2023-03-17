@@ -43,19 +43,18 @@ from pycbc.psd import aLIGOZeroDetHighPower
 from pycbc.psd import interpolate, welch, inverse_spectrum_truncation
 from pycbc.filter import highpass, matched_filter
 
-fLow, segLen = 20, 360
-fSamp = 4096
-m1, m2 = 1.41, 1.35
-s1z, s2z = 0.0004, 0.0004
-distance = 45
-inclination = 2.5
-f_final = f_SchwarzISCO(m1+m2)
+segLen = 360 #sec
+fSamp = 4096 #Hz
+m1, m2 = 1.41, 1.35 #solar mass
+s1z, s2z = 0.0004, 0.0004 #dimensionless aligned spin magnitudes
+distance = 45 #Mpc
+inclination = 2.5 #radian
 
 merger = Merger("GW170817")
 strain, stilde = {}, {}
 ifos = ['L1', 'H1', 'V1']
-fLow = 20 
-fHigh = f_SchwarzISCO(m1+m2)
+fLow = 20 #Hz
+fHigh = f_SchwarzISCO(m1+m2) #Hz
 
 low_frequency_cutoff = {}
 high_frequency_cutoff = {}
@@ -99,7 +98,7 @@ for ifo in ifos:
                                     low_frequency_cutoff=low_frequency_cutoff[ifo], trunc_method='hann')
                                     
 params = {'mass1': m1, 'mass2': m2, 'spin1z': s1z, 'spin2z': s2z, 'distance': distance, \
-                      'f_lower': fLow, 'f_final': f_final, 'segLen': segLen, 'inclination': inclination}                              
+                      'f_lower': fLow, 'f_final': fHigh, 'segLen': segLen, 'inclination': inclination}                              
  
 # generate a TaylorF2 model waveform
 hp, hc = waveform.get_fd_waveform(approximant='TaylorF2',
