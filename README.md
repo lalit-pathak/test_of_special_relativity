@@ -140,4 +140,4 @@ plt.show()
 
 ```
 
-![localImage](waveform.jpg)
+![localImage](waveform.jpeg)
