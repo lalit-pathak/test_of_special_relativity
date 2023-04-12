@@ -1,17 +1,30 @@
 # test_of_special_relativity
 
 To generate a modified TaylorF2 waveform (phasing given by eq. 4 in the paper), requires the following packages: numpy, scipy, pycbc.
-These dependencies should all be installable with conda or pip. First, we need to install pycbc python package and then install the extra waveform plugin to make the modified TaylorF2 available in pycbc waveforms.
+These dependencies should all be installable with conda or pip. First, we need to install pycbc python package and then install the extra waveform plugin to make the modified TaylorF2 available in PyCBC waveforms.
 
-Install pycbc pacakge
+Install PyCBC pacakge
 
     $ pip install pycbc
+   
+For more information about PyCBC pacakge, please visit: https://pycbc.org/pycbc/latest/html/install.html
 
 Clone this repository and install modified TaylorF2 waveform plugin
 
     $ git clone https://github.com/lalit-pathak/test_of_special_relativity.git
     $ cd test_waveform_plugin
     $ python3 setup.py install
+    
+To plot the corner plots, you are required to install corner pacakge. Since we have tweaked (little) the corner pacakge, you need to first clone it in your local directory, modify and, install it.
+        
+    $ git clone https://github.com/dfm/corner.py.git
+    $ cd corner.py/src/corner/
+    
+Now, replace arviz_corner.py, core.py, and corner.py by the files present in the diretory corner_modification here. Now install it using the following command:
+    
+    $ python -m pip install .
+    
+For more information about corner pacakge, please visit https://corner.readthedocs.io/en/latest/install/.
 
 For running this analysis, the GW170817 strain data can be downloaded from the following links:
 [L1](https://dcc.ligo.org/public/0146/P1700349/001/L-L1_LOSC_CLN_4_V1-1187007040-2048.gwf)
