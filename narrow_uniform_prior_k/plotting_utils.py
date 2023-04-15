@@ -85,7 +85,8 @@ def plot_corner(samples, filename=None, save=False, dpi=None, **kwargs):
     defaults_kwargs = dict(bins=20, smooth=0.9, label_kwargs=dict(fontsize=16),
             title_kwargs=dict(fontsize=16), color='#0072C1',
             truth_color='tab:orange', quantiles=None,
-            levels=[1 - np.exp(-0.74**2/2), 1 - np.exp(-1.32**2/2)],
+            # levels=[1 - np.exp(-0.74**2/2), 1 - np.exp(-1.32**2/2)],
+            levels=[0.5, 0.9],
             plot_density=False, plot_datapoints=False, fill_contours=False,
             max_n_ticks=5, hist_kwargs=dict(density=True), show_titles=False, title_fmt=None)
     
