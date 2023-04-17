@@ -94,7 +94,7 @@ def plot_corner(samples, filename=None, save=False, dpi=None, **kwargs):
     
     for ax in fig.get_axes():
     
-        ax.tick_params(axis='both', labelsize=kwargs.get('label_kwargs').get('fontsize')-4)
+        ax.tick_params(axis='both', labelsize=kwargs.get('label_kwargs').get('fontsize')-6)
     
     if save:
         
