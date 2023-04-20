@@ -63,7 +63,6 @@ for ifo in ifos:
     stilde[ifo] = strain[ifo].to_frequencyseries()
 
 #-- calculating psds ---
-
 psds = {}
 
 for ifo in ifos:
@@ -137,9 +136,11 @@ def prior_transform(cube):
 
 print('********** Sampling starts *********\n')
 
-nProcs = 120 #int(input('no. of processors to be used for dynesty sampler: '))
+#-- sampling parameters ---
+nProcs = 120 
 nDims = 8
-
+sample = 'rwalk'
+dlogz_init = 1e-4
 seed_PE = 0
 
 st = time.time()
@@ -147,11 +148,11 @@ st = time.time()
 #-- definig dynesty sampler ---
 with mp.Pool(nProcs) as pool:
     
-    sampler = dynesty.DynamicNestedSampler(pycbc_log_likelihood, prior_transform, nDims, sample='rwalk', \
+    sampler = dynesty.DynamicNestedSampler(pycbc_log_likelihood, prior_transform, nDims, sample=sample, \
                                             pool=pool, queue_size=nProcs, rstate=Generator(PCG64(seed=seed_PE)))
-    sampler.run_nested(dlogz_init=1e-4)
+    sampler.run_nested(dlogz_init=dlogz_init)
 
-#-- saving pe samples ---
+#-- saving raw pe samples ---
 res = sampler.results
 print('Evidence:{}'.format(res['logz'][-1]))
 

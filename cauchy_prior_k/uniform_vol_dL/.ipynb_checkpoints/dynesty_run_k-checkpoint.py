@@ -44,7 +44,6 @@ for ifo in ifos:
 #-- reading GW170817 data ---
 #-- We use 360 seconds open archival GW170817 data(containing the trigger)from GWOSC ---
 #-- Using PyCBC utilities to perform some cleaning jobs on the raw data ---
-
 for ifo in ifos:
     
     ts = read_frame("{}-{}_LOSC_CLN_4_V1-1187007040-2048.gwf".format(ifo[0], ifo),
@@ -63,7 +62,6 @@ for ifo in ifos:
     stilde[ifo] = strain[ifo].to_frequencyseries()
 
 #-- calculating psds ---
-
 psds = {}
 
 for ifo in ifos:
@@ -136,9 +134,11 @@ def prior_transform(cube):
 
 print('********** Sampling starts *********\n')
 
-nProcs = 120 #int(input('no. of processors to be used for dynesty sampler: '))
+#-- sampling parameters ---
+nProcs = 120 
 nDims = 8
-
+sample = 'rwalk'
+dlogz_init = 1e-4
 seed_PE = 0
 
 st = time.time()
@@ -146,12 +146,11 @@ st = time.time()
 #-- definig dynesty sampler ---
 with mp.Pool(nProcs) as pool:
     
-    sampler = dynesty.DynamicNestedSampler(pycbc_log_likelihood, prior_transform, nDims, sample='rwalk', \
+    sampler = dynesty.DynamicNestedSampler(pycbc_log_likelihood, prior_transform, nDims, sample=sample, \
                                             pool=pool, queue_size=nProcs, rstate=Generator(PCG64(seed=seed_PE)))
-    sampler.run_nested(dlogz_init=1e-4)
+    sampler.run_nested(dlogz_init=dlogz_init)
 
-    
-#-- saving pe samples ---
+#-- saving raw pe samples ---
 res = sampler.results
 print('Evidence:{}'.format(res['logz'][-1]))
 
