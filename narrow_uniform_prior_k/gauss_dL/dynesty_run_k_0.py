@@ -107,7 +107,7 @@ mchirp_min, mchirp_max = 1.197, 1.198
 mass_ratio_min, mass_ratio_max = 1, 1.7
 s1z_min, s1z_max = 0, 0.05
 s2z_min, s2z_max = 0, 0.05
-distance_mean, distance_var = 40.7, 3.3  # fixing the galaxy location
+distance_mean, distance_var = 40.7, 3.3**2  # fixing the galaxy location
 distance_min, distance_max = 12, 53
 tc_min, tc_max = merger.time - 0.15, merger.time + 0.15
 
