@@ -94,7 +94,7 @@ def plot_corner(samples, filename=None, save=False, dpi=None, **kwargs):
     
     for ax in fig.get_axes():
     
-        ax.tick_params(axis='both', labelsize=kwargs.get('label_kwargs').get('fontsize')-6)
+        ax.tick_params(axis='both', labelsize=kwargs.get('label_kwargs').get('fontsize')-4)
     
     if save:
         
@@ -136,9 +136,7 @@ def title_formats(samps, labels, titles, fmt_arr, bins, measure='map'):
         if(t == r'$k$'):
             
             kernel = gaussian_kde(samps[:,p])
-            count, val = np.histogram(samps[:,p], bins)
-            val_pdf = kernel.pdf(val)
-            map_val = val[np.argmax(val_pdf)]/1e-18
+            map_val = samps[np.argmax(kernel(samps[:,p])), p]/1e-18
 
             q_5, q_50, q_95 = np.quantile(samps[:,p]/1e-18, [0.05, 0.5, 0.95])
             
@@ -169,9 +167,7 @@ def title_formats(samps, labels, titles, fmt_arr, bins, measure='map'):
         else:
         
             kernel = gaussian_kde(samps[:,p])
-            count, val = np.histogram(samps[:,p], bins)
-            val_pdf = kernel.pdf(val)
-            map_val = val[np.argmax(val_pdf)]
+            map_val = samps[np.argmax(kernel(samps[:,p])), p]
             
             if(measure=='median'):
               

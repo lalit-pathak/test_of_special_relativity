@@ -85,8 +85,7 @@ def plot_corner(samples, filename=None, save=False, dpi=None, **kwargs):
     defaults_kwargs = dict(bins=20, smooth=0.9, label_kwargs=dict(fontsize=16),
             title_kwargs=dict(fontsize=16), color='#0072C1',
             truth_color='tab:orange', quantiles=None,
-            # levels=[1 - np.exp(-0.74**2/2), 1 - np.exp(-1.32**2/2)],
-            levels=[0.5, 0.9],
+            levels=[1 - np.exp(-0.74**2/2), 1 - np.exp(-1.32**2/2)],
             plot_density=False, plot_datapoints=False, fill_contours=False,
             max_n_ticks=5, hist_kwargs=dict(density=True), show_titles=False, title_fmt=None)
     
@@ -137,9 +136,7 @@ def title_formats(samps, labels, titles, fmt_arr, bins, measure='map'):
         if(t == r'$k$'):
             
             kernel = gaussian_kde(samps[:,p])
-            count, val = np.histogram(samps[:,p], bins)
-            val_pdf = kernel.pdf(val)
-            map_val = val[np.argmax(val_pdf)]/1e-18
+            map_val = samps[np.argmax(kernel(samps[:,p])), p]/1e-18
 
             q_5, q_50, q_95 = np.quantile(samps[:,p]/1e-18, [0.05, 0.5, 0.95])
             
@@ -170,9 +167,7 @@ def title_formats(samps, labels, titles, fmt_arr, bins, measure='map'):
         else:
         
             kernel = gaussian_kde(samps[:,p])
-            count, val = np.histogram(samps[:,p], bins)
-            val_pdf = kernel.pdf(val)
-            map_val = val[np.argmax(val_pdf)]
+            map_val = samps[np.argmax(kernel(samps[:,p])), p]
             
             if(measure=='median'):
               
